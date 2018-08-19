@@ -1,0 +1,7 @@
+## Interface: 80000
+## Author: Req
+## Title: LootSpecManager
+## Notes: Manages loot spec preferences for dungeon/raid bosses.
+## SavedVariablesPerCharacter: LTSM
+
+core.lua
