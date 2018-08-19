@@ -1,7 +1,8 @@
 
-local tinsert = tinsert
-local ipairs = ipairs
 local pairs = pairs
+local ipairs = ipairs
+local unpack = unpack
+local tinsert = tinsert
 local UnitClass = UnitClass
 local CreateFrame = CreateFrame
 local SetLootSpecialization = SetLootSpecialization
@@ -233,6 +234,16 @@ function build_settings_frame()
 		return checkbox
 	end
 
+	local function make_spec_display(x, y, icon)
+		local frame = CreateFrame("Frame", nil, content)
+		frame:SetSize(INSTANCE_SPACING, INSTANCE_SPACING)
+		frame:SetPoint("TOPRIGHT", content, "TOPRIGHT", x, y)
+		frame.texture = frame:CreateTexture(nil, "ARTWORK", nil)
+		frame.texture:SetTexture(icon)
+		frame.texture:SetAllPoints(frame)
+		return frame
+	end
+
 	for _, instance in ipairs(instances) do
 		local instancename = CreateFrame("Frame", nil, content)
 		instancename:SetSize(content:GetWidth(), INSTANCE_SPACING)
@@ -243,28 +254,10 @@ function build_settings_frame()
 		instancename.text:SetJustifyH("LEFT")
 		instancename.text:SetJustifyV("CENTER")
 
-		local frame = CreateFrame("Button", nil, content)
-		frame:SetSize(INSTANCE_SPACING, INSTANCE_SPACING)
-		frame:SetPoint("TOPRIGHT", content, "TOPRIGHT", -2, y)
-		frame.texture = frame:CreateTexture(nil, "ARTWORK", nil)
-		frame.texture:SetTexture("Interface\\ICONS\\INV_Misc_QuestionMark")
-		frame.texture:SetAllPoints(frame)
-
-		frame = CreateFrame("Button", nil, content)
-		frame:SetSize(INSTANCE_SPACING, INSTANCE_SPACING)
-		frame:SetPoint("TOPRIGHT", content, "TOPRIGHT", -2 - INSTANCE_SPACING, y)
-		frame.texture = frame:CreateTexture(nil, "ARTWORK", nil)
-		frame.texture:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
-		frame.texture:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classname]))
-		frame.texture:SetAllPoints(frame)
-
+		make_spec_display(-2, y, "Interface\\ICONS\\INV_Misc_QuestionMark")
+		make_spec_display(-2 - INSTANCE_SPACING, y, "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES").texture:SetTexCoord(unpack(CLASS_ICON_TCOORDS[classname]))
 		for x, spec in ipairs(specs) do
-			local frame = CreateFrame("Button", nil, content)
-			frame:SetSize(INSTANCE_SPACING, INSTANCE_SPACING)
-			frame:SetPoint("TOPRIGHT", content, "TOPRIGHT", -2 - (#specs - x + 2) * INSTANCE_SPACING, y)
-			frame.texture = frame:CreateTexture(nil, "ARTWORK", nil)
-			frame.texture:SetTexture(spec.icon)
-			frame.texture:SetAllPoints(frame)
+			make_spec_display(-2 - (#specs - x + 2) * INSTANCE_SPACING, y, spec.icon)
 		end
 
 		y = y - INSTANCE_SPACING
