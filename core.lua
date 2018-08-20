@@ -78,7 +78,7 @@ end)(
 		[4] = {name = "Vol'zith the Whisperer", id = 2133}
 	}},
 	{"Siege of Boralus", {
-		[1] = {name = "Sergeant Bainbridge", id = 2097},
+		[1] = {name = "Chopper Redhook/Sergeant Bainbridge", id = 2097},
 		[2] = {name = "Dread Captain Lockwood", id = 2109},
 		[3] = {name = "Hadal Darkfathom", id = 2099},
 		[4] = {name = "Viq'Goth", id = 2100}
@@ -167,7 +167,7 @@ function build_settings_frame()
 	else
 		f:SetPoint("CENTER")
 	end
-	f:SetSize(400, 600)
+	f:SetSize(450, 600)
 	f:SetToplevel(true)
 	f:SetClampedToScreen(true)
 	f:EnableMouse(true)
@@ -236,7 +236,7 @@ function build_settings_frame()
 	content:SetSize(scrollframe:GetWidth() - scrollbar:GetWidth(), total_size)
 	scrollframe.content = content
 
-	local BOSS_INDENT = 50
+	local BOSS_INDENT = 30
 
 	local y = -5
 
