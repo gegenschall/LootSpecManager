@@ -78,11 +78,9 @@ end)(
 		[4] = {name = "Vol'zith the Whisperer", id = 2133}
 	}},
 	{"Siege of Boralus", {
-		--possibly wrong
-		[1] = {name = "Chopper Redhook", id = 2097},
+		[1] = {name = "Sergeant Bainbridge", id = 2097},
 		[2] = {name = "Dread Captain Lockwood", id = 2109},
 		[3] = {name = "Hadal Darkfathom", id = 2099},
-		--possibly wrong
 		[4] = {name = "Viq'Goth", id = 2100}
 	}},
 	{"Temple of Sethraliss", {
