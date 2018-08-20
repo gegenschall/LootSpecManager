@@ -133,8 +133,16 @@ local mythicplus = {}
 		mythicplus[v[2]] = v[1]
 	end
 end)(
-	--TODO
-	{"Atal'Dazar", 0000}
+	{"Atal'Dazar", 1763},
+	{"Freehold", 1754},
+	{"Kings' Rest", 1762},
+	{"Siege of Boralus", 1822},
+	{"Shrine of the Storm", 1864},
+	{"Temple of Sethraliss", 1877},
+	{"The MOTHERLODE!!", 1594},
+	{"The Underrot", 1841},
+	{"Tol Dagor", 1771},
+	{"Waycrest Manor", 1862}
 )
 
 local settings_frame = CreateFrame("Frame", "LTSM_Frame", UIParent, "ButtonFrameTemplate")
@@ -185,6 +193,9 @@ function build_settings_frame()
 	local nencounters = 0
 	for _, instance in ipairs(instances) do
 		nencounters = nencounters + 1
+		if mythicplus[instance.name] then
+			nencounters = nencounters + 1
+		end
 	end
 
 	local function clamp(n, min, max)
@@ -229,7 +240,7 @@ function build_settings_frame()
 
 	local BOSS_INDENT = 50
 
-	local y = -10
+	local y = -5
 
 	local current_radio_group
 
@@ -256,6 +267,25 @@ function build_settings_frame()
 		return checkbox
 	end
 
+	local function make_mp_checkbox(x, y, id, spec)
+		local checkbox = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
+		checkbox.dungeon = id
+		checkbox.spec = spec
+		checkbox.group = current_radio_group
+		checkbox:SetPoint("TOPRIGHT", content, "TOPRIGHT", x, y)
+		checkbox:RegisterForClicks("AnyUp")
+		checkbox:SetScript("OnClick", function(self)
+			for _, v in pairs(self.group) do
+				if v ~= self then
+					v:SetChecked(false)
+				end
+			end
+			ltsm.mythicplus[self.dungeon] = self.spec
+		end)
+		tinsert(current_radio_group, checkbox)
+		return checkbox
+	end
+
 	local function make_spec_display(x, y, icon)
 		local frame = CreateFrame("Frame", nil, content)
 		frame:SetSize(INSTANCE_SPACING, INSTANCE_SPACING)
@@ -272,6 +302,7 @@ function build_settings_frame()
 		instancename:SetPoint("TOPLEFT", content, "TOPLEFT", 5, y)
 		instancename.text = instancename:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		instancename.text:SetText(instance.name)
+		instancename.text:SetTextColor(0.9, 0.1, 0.1, 1)
 		instancename.text:SetAllPoints()
 		instancename.text:SetJustifyH("LEFT")
 		instancename.text:SetJustifyV("CENTER")
@@ -309,6 +340,33 @@ function build_settings_frame()
 			y = y - ENCOUNTER_SPACING
 		end
 
+		local mpid = mythicplus[instance.name]
+		if mpid then
+			local mplabel = CreateFrame("Frame", nil, content)
+			mplabel:SetSize(content:GetWidth() - BOSS_INDENT, ENCOUNTER_SPACING)
+			mplabel:SetPoint("TOPLEFT", content, "TOPLEFT", 5 + BOSS_INDENT, y)
+			mplabel.text = mplabel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+			mplabel.text:SetText("Mythic+")
+			mplabel.text:SetTextColor(0.9, 0.9, 0.9, 1)
+			mplabel.text:SetAllPoints()
+			mplabel.text:SetJustifyH("LEFT")
+			mplabel.text:SetJustifyV("CENTER")
+
+			start_radio_group()
+			local checkboxes = {}
+			checkboxes[SPEC_DONT_CARE] = make_mp_checkbox(-2, y, mpid, SPEC_DONT_CARE)
+			checkboxes[SPEC_CURRENT_SPEC] = make_mp_checkbox(-2 - INSTANCE_SPACING, y, mpid, SPEC_CURRENT_SPEC)
+			for x, spec in ipairs(specs) do
+				checkboxes[spec.id] = make_mp_checkbox(-2 - (#specs - x + 2) * INSTANCE_SPACING, y, mpid, spec.id)
+			end
+			if not ltsm.mythicplus[mpid] then
+				ltsm.mythicplus[mpid] = SPEC_DONT_CARE
+			end
+			checkboxes[ltsm.mythicplus[mpid]]:SetChecked(true)
+
+			y = y - ENCOUNTER_SPACING
+		end
+
 		y = y - 10
 	end
 
@@ -320,18 +378,18 @@ end
 local events = {}
 
 function events:PLAYER_LOGIN()
-	LTSM = LTSM or {
-		--{encounterid = specid, ...}
-		encounters = {},
-		--frame settings, x/y
-		settings = {}
-	}
+	LTSM = LTSM or {}
 	ltsm = LTSM
+	--{encounterid = specid, ...}
+	ltsm.encounters = ltsm.encounters or {}
+	--{mapid = specid, ...}
+	ltsm.mythicplus = ltsm.mythicplus or {}
+	--frame settings - x/y
+	ltsm.settings = ltsm.settings or {}
 	build_settings_frame()
 end
 
-function events:ENCOUNTER_START(id)
-	local spec = ltsm.encounters[id]
+local function set_spec(spec)
 	if not spec then
 		print(("[LTSM] Ignoring %d."):format(id))
 		return
@@ -347,10 +405,15 @@ function events:ENCOUNTER_START(id)
 	end
 end
 
+function events:ENCOUNTER_START(id)
+	set_spec(ltsm.encounters[id])
+end
+
 --http://www.wowinterface.com/forums/showthread.php?t=54866
 function events:CHALLENGE_MODE_COMPLETED()
 	local map = C_ChallengeMode.GetCompletionInfo()
 	print("[LTSM] Finished key " .. map, "(LOG THIS MAP ID)")
+	set_spec(ltsm.mythicplus[map])
 end
 
 local frame = CreateFrame("Frame")
