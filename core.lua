@@ -389,7 +389,6 @@ end
 
 local function set_spec(spec)
 	if not spec then
-		print(("[LTSM] Ignoring %d."):format(id))
 		return
 	end
 	if spec ~= SPEC_DONT_CARE then
@@ -410,7 +409,7 @@ end
 --http://www.wowinterface.com/forums/showthread.php?t=54866
 function events:CHALLENGE_MODE_COMPLETED()
 	local map = C_ChallengeMode.GetCompletionInfo()
-	print("[LTSM] Finished key " .. map, "(LOG THIS MAP ID)")
+	print("[LTSM] Finished key " .. map .. ". If your loot spec is not properly set right now, please inform the author (include the number at the start of this output).")
 	set_spec(ltsm.mythicplus[map])
 end
 
