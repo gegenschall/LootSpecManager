@@ -1,4 +1,6 @@
 
+local LTSM_DATA_VERSION = 1
+
 local pairs = pairs
 local ipairs = ipairs
 local unpack = unpack
@@ -77,12 +79,19 @@ end)(
 		[3] = {name = "Lord Stormsong", id = 2132},
 		[4] = {name = "Vol'zith the Whisperer", id = 2133}
 	}},
-	{"Siege of Boralus", {
-		[1] = {name = "Chopper Redhook/Sergeant Bainbridge", id = 2097},
-		[2] = {name = "Dread Captain Lockwood", id = 2109},
-		[3] = {name = "Hadal Darkfathom", id = 2099},
-		[4] = {name = "Viq'Goth", id = 2100}
-	}},
+	{"Siege of Boralus", (function()
+		local encounters = {
+			[2] = {name = "Dread Captain Lockwood", id = 2109},
+			[3] = {name = "Hadal Darkfathom", id = 2099},
+			[4] = {name = "Viq'Goth", id = 2100}
+		}
+		if UnitFactionGroup("player") == "Alliance" then
+			encounters[1] = {name = "Chopper Redhook", id = 2098}
+		else
+			encounters[1] = {name = "Sergeant Bainbridge", id = 2097}
+		end
+		return encounters
+	end)()},
 	{"Temple of Sethraliss", {
 		[1] = {name = "Adderis and Aspix", id = 2124},
 		[2] = {name = "Merektha", id = 2125},
@@ -167,7 +176,7 @@ function build_settings_frame()
 	else
 		f:SetPoint("CENTER")
 	end
-	f:SetSize(450, 600)
+	f:SetSize(400, 600)
 	f:SetToplevel(true)
 	f:SetClampedToScreen(true)
 	f:EnableMouse(true)
@@ -378,6 +387,12 @@ local events = {}
 function events:PLAYER_LOGIN()
 	LTSM = LTSM or {}
 	ltsm = LTSM
+	if not ltsm.version then
+		--first iteration had 2097 for both bosses
+		ltsm.encounters[2098] = ltsm.encounters[2098] or ltsm.encounters[2097]
+
+		ltsm.version = LTSM_DATA_VERSION
+	end
 	--{encounterid = specid, ...}
 	ltsm.encounters = ltsm.encounters or {}
 	--{mapid = specid, ...}
@@ -403,7 +418,12 @@ local function set_spec(spec)
 end
 
 function events:ENCOUNTER_START(id)
+	print(("[LTSM-DEBUG] Pulled boss %d"):format(id))
 	set_spec(ltsm.encounters[id])
+end
+
+function events:ENCOUNTER_END(id)
+
 end
 
 --http://www.wowinterface.com/forums/showthread.php?t=54866
