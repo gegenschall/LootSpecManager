@@ -387,18 +387,18 @@ local events = {}
 function events:PLAYER_LOGIN()
 	LTSM = LTSM or {}
 	ltsm = LTSM
-	if not ltsm.version then
-		--first iteration had 2097 for both bosses
-		ltsm.encounters[2098] = ltsm.encounters[2098] or ltsm.encounters[2097]
-
-		ltsm.version = LTSM_DATA_VERSION
-	end
 	--{encounterid = specid, ...}
 	ltsm.encounters = ltsm.encounters or {}
 	--{mapid = specid, ...}
 	ltsm.mythicplus = ltsm.mythicplus or {}
 	--frame settings - x/y
 	ltsm.settings = ltsm.settings or {}
+	if not ltsm.version then
+		--first iteration had 2097 for both bosses
+		ltsm.encounters[2098] = ltsm.encounters[2098] or ltsm.encounters[2097]
+
+		ltsm.version = LTSM_DATA_VERSION
+	end
 	build_settings_frame()
 end
 
