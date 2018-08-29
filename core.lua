@@ -418,7 +418,6 @@ local function set_spec(spec)
 end
 
 function events:ENCOUNTER_START(id)
-	print(("[LTSM-DEBUG] Pulled boss %d"):format(id))
 	set_spec(ltsm.encounters[id])
 end
 
