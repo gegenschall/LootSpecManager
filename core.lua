@@ -1,5 +1,5 @@
 
-local LTSM_DATA_VERSION = 1
+local LTSM_DATA_VERSION = 2
 
 local pairs = pairs
 local ipairs = ipairs
@@ -152,6 +152,56 @@ end)(
 	{"Waycrest Manor", 1862}
 )
 
+local difficulty_to_name = {
+	[17] = "lfr",
+	[1] = "normal", --dungeons
+	[14] = "normal", --raids
+	[2] = "heroic", --dungeons
+	[15] = "heroic", --raids
+	[23] = "mythic", --dungeons
+	[16] = "mythic", --raids
+	mythic = "mythic",
+	heroic = "heroic",
+	normal = "normal",
+	lfr = "lfr"
+}
+
+local function get_spec_for(encounter, difficulty)
+	difficulty = difficulty or ltsm.current
+	return ltsm.encounters[difficulty_to_name[difficulty]][encounter]
+end
+
+local function set_spec_for(encounter, spec)
+	ltsm.encounters[ltsm.current][encounter] = spec
+end
+
+local function set_difficulty_table(name)
+	ltsm.current = name
+
+	local _, _, classid = UnitClass("player")
+	local specs = {}
+	for k = 1, GetNumSpecializationsForClassID(classid) do
+		local id = GetSpecializationInfoForClassID(classid, k)
+		if not id then
+			break
+		end
+		tinsert(specs, id)
+	end
+
+	for encounter, spec in pairs(ltsm.encounters[ltsm.current]) do
+		for _, specid in pairs(specs) do
+			local checkbox = _G[("ltsm-cb-%d-%d"):format(encounter, specid)]
+			if checkbox then
+				checkbox:SetChecked(false)
+			end
+		end
+		local checkbox = _G[("ltsm-cb-%d-%d"):format(encounter, spec)]
+		if checkbox then
+			checkbox:SetChecked(true)
+		end
+	end
+end
+
 local settings_frame = CreateFrame("Frame", "LTSM_Frame", UIParent, "ButtonFrameTemplate")
 
 function build_settings_frame()
@@ -176,7 +226,7 @@ function build_settings_frame()
 	else
 		f:SetPoint("CENTER")
 	end
-	f:SetSize(400, 600)
+	f:SetSize(450, 600)
 	f:SetToplevel(true)
 	f:SetClampedToScreen(true)
 	f:EnableMouse(true)
@@ -256,7 +306,7 @@ function build_settings_frame()
 	end
 
 	local function make_checkbox(x, y, encounter, spec)
-		local checkbox = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
+		local checkbox = CreateFrame("CheckButton", ("ltsm-cb-%d-%d"):format(encounter, spec), content, "UICheckButtonTemplate")
 		checkbox.encounter = encounter
 		checkbox.spec = spec
 		checkbox.group = current_radio_group
@@ -268,7 +318,7 @@ function build_settings_frame()
 					v:SetChecked(false)
 				end
 			end
-			ltsm.encounters[self.encounter] = self.spec
+			set_spec_for(self.encounter, spec)
 		end)
 		tinsert(current_radio_group, checkbox)
 		return checkbox
@@ -339,10 +389,10 @@ function build_settings_frame()
 			for x, spec in ipairs(specs) do
 				checkboxes[spec.id] = make_checkbox(-2 - (#specs - x + 2) * INSTANCE_SPACING, y, boss.id, spec.id)
 			end
-			if not ltsm.encounters[boss.id] then
-				ltsm.encounters[boss.id] = SPEC_DONT_CARE
+			if not get_spec_for(boss.id) then
+				set_spec_for(boss.id, SPEC_DONT_CARE)
 			end
-			checkboxes[ltsm.encounters[boss.id]]:SetChecked(true)
+			checkboxes[get_spec_for(boss.id)]:SetChecked(true)
 
 			y = y - ENCOUNTER_SPACING
 		end
@@ -379,26 +429,86 @@ function build_settings_frame()
 
 	scrollframe:SetScrollChild(content)
 
+	local dropdown = CreateFrame("Frame", "ltsmdropdown", f, "UIDropDownMenuTemplate")
+	dropdown:SetSize(100, 50)
+	dropdown:SetPoint("TOPLEFT", f, "TOPLEFT", 64, -32)
+	UIDropDownMenu_Initialize(dropdown, function()
+		local function callback(self)
+			set_difficulty_table(self.value)
+			UIDropDownMenu_SetSelectedValue(dropdown, self.value)
+		end
+
+		local info = UIDropDownMenu_CreateInfo()
+		info.text = "Mythic"
+		info.value = "mythic"
+		info.func = callback
+		info.checked = false
+		info.isNotRadio = false
+		UIDropDownMenu_AddButton(info)
+
+		info.text = "Heroic"
+		info.value = "heroic"
+		info.func = callback
+		info.checked = false
+		info.isNotRadio = false
+		UIDropDownMenu_AddButton(info)
+
+		info.text = "Normal"
+		info.value = "normal"
+		info.func = callback
+		info.checked = false
+		info.isNotRadio = false
+		UIDropDownMenu_AddButton(info)
+
+		info.text = "LFR"
+		info.value = "lfr"
+		info.func = callback
+		info.checked = false
+		info.isNotRadio = false
+		UIDropDownMenu_AddButton(info)
+	end)
+	UIDropDownMenu_SetSelectedValue(dropdown, "mythic")
+
 	f:Hide()
 end
 
 local events = {}
 
-function events:PLAYER_LOGIN()
-	LTSM = LTSM or {}
-	ltsm = LTSM
-	--{encounterid = specid, ...}
+local function handle_version_updates()
+	--{difficulty = {encounterid = specid, ...}...}
 	ltsm.encounters = ltsm.encounters or {}
 	--{mapid = specid, ...}
 	ltsm.mythicplus = ltsm.mythicplus or {}
 	--frame settings - x/y
 	ltsm.settings = ltsm.settings or {}
+	--initial version
 	if not ltsm.version then
 		--first iteration had 2097 for both bosses
 		ltsm.encounters[2098] = ltsm.encounters[2098] or ltsm.encounters[2097]
-
-		ltsm.version = LTSM_DATA_VERSION
 	end
+	if ltsm.version == 1 then
+		local encounters = ltsm.encounters
+		ltsm.encounters = {
+			mythic = {},
+			heroic = {},
+			normal = {},
+			lfr = {}
+		}
+		for k, v in pairs(encounters) do
+			ltsm.encounters.mythic[k] = v
+			ltsm.encounters.heroic[k] = v
+			ltsm.encounters.normal[k] = v
+			ltsm.encounters.lfr[k] = v
+		end
+		ltsm.current = "mythic"
+	end
+	ltsm.version = LTSM_DATA_VERSION
+end
+
+function events:PLAYER_LOGIN()
+	LTSM = LTSM or {}
+	ltsm = LTSM
+	handle_version_updates()
 	build_settings_frame()
 end
 
@@ -412,17 +522,13 @@ local function set_spec(spec)
 			print("[LTSM] Setting loot spec to current spec.")
 		else
 			local _, name = GetSpecializationInfoByID(spec)
-			print(("[LTSM] Settings loot spec to %s."):format(name))
+			print(("[LTSM] Setting loot spec to %s."):format(name))
 		end
 	end
 end
 
-function events:ENCOUNTER_START(id)
-	set_spec(ltsm.encounters[id])
-end
-
-function events:ENCOUNTER_END(id)
-
+function events:ENCOUNTER_START(id, _, difficulty)
+	set_spec(get_spec_for(id, difficulty))
 end
 
 --http://www.wowinterface.com/forums/showthread.php?t=54866
