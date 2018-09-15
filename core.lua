@@ -168,7 +168,12 @@ local difficulty_to_name = {
 
 local function get_spec_for(encounter, difficulty)
 	difficulty = difficulty or ltsm.current
-	return ltsm.encounters[difficulty_to_name[difficulty]][encounter]
+	local table = ltsm.encounters[difficulty_to_name[difficulty]]
+	if table then
+		return table[encounter]
+	else
+		return nil
+	end
 end
 
 local function set_spec_for(encounter, spec)
