@@ -490,6 +490,9 @@ local function handle_version_updates()
 	if not ltsm.version then
 		--first iteration had 2097 for both bosses
 		ltsm.encounters[2098] = ltsm.encounters[2098] or ltsm.encounters[2097]
+
+		--update version
+		ltsm.version = 1
 	end
 	if ltsm.version == 1 then
 		local encounters = ltsm.encounters
@@ -506,8 +509,10 @@ local function handle_version_updates()
 			ltsm.encounters.lfr[k] = v
 		end
 		ltsm.current = "mythic"
+
+		--update version
+		ltsm.version = LTSM_DATA_VERSION
 	end
-	ltsm.version = LTSM_DATA_VERSION
 end
 
 function events:PLAYER_LOGIN()
