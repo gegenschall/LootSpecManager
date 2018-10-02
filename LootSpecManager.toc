@@ -4,4 +4,6 @@
 ## Notes: Manages loot spec preferences for dungeon/raid bosses.
 ## SavedVariablesPerCharacter: LTSM
 
+data.lua
+gui.lua
 core.lua
