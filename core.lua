@@ -162,8 +162,6 @@ function events:AZERITE_ITEM_EXPERIENCE_CHANGED()
 	end
 end
 
---TODO add a dropdown for copying settings tables
-
 local frame = CreateFrame("Frame");
 frame:SetScript("OnEvent", function(self, event, ...)
 	return events[event](self, ...)
