@@ -150,6 +150,8 @@ function LTSM_DATA:check_version()
 	--initial version had no version number
 	if not ltsm.version then
 		ltsm.encounters = ltsm.encounters or {}
+		ltsm.settings = ltsm.settings or {}
+		ltsm.mythicplus = ltsm.mythicplus or {}
 
 		--first iteration had 2097 for both bosses
 		ltsm.encounters[2098] = ltsm.encounters[2098] or ltsm.encounters[2097]

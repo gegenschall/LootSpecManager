@@ -16,13 +16,26 @@ LTSM_API.difficulties = {
 }
 
 ---
+-- Mapping from difficulty table names to the ENCOUNTER_START difficulty parameter.
+LTSM_API.reverse_difficulties = {
+	lfr = 17,
+	normal = 1,
+	heroic = 2,
+	mythic = 23
+}
+
+---
 -- Retrieves the loot spec setting for a specific encounter and difficulty.
 -- @param encounter Encounter ID from ENCOUNTER_START.
 -- @param difficulty (optional) Difficulty parameter from ENCOUNTER_START.
 -- @return Spec ID for the encounter and difficulty. Returns SPEC_DONT_CARE if the setting doesn't exist.
 function LTSM_API:get_spec_for_encounter(encounter, difficulty)
 	difficulty = self.difficulties[difficulty]
-	spec = ltsm.encounters[difficulty][encounter]
+	local table = ltsm.encounters[difficulty]
+	if table == nil then
+		return LTSM_DATA.SPEC_DONT_CARE
+	end
+	spec = table[encounter]
 	if spec == nil then
 		spec = LTSM_DATA.SPEC_DONT_CARE
 	end
@@ -68,7 +81,7 @@ end
 -- @param map Primary map ID from LTSM_DATA.
 -- @return Spec ID for the end-of-key box.
 function LTSM_API:get_mythicplus_spec(map)
-	return ltsm.mythicplus[map]
+	return ltsm.mythicplus[map] or LTSM_DATA.SPEC_DONT_CARE
 end
 
 ---
@@ -81,16 +94,22 @@ end
 
 ---
 -- Copies settings from one difficulty table to another.
--- @param from Difficulty table to copy from.
--- @param to Difficulty table to copy to.
-function LTSM_API:copy_settings(from, to)
-	from = ltsm.encounters[from]
+-- @param from Difficulty table name to copy from.
+-- @param to Difficulty table name to copy to.
+function LTSM_API:copy_settings(from_name, to_name)
+	local from = ltsm.encounters[from_name]
 	if from == nil then
 		error("Difficulty table doesn't exist: " .. difficulty)
 	end
 
-	ltsm.encounters[to] = {}
-	to = ltsm.encounters[to]
+	if from_name == to_name then
+		print(("[LTSM] Not bothering to copy settings from %s to %s"):format(from_name, to_name))
+		return
+	end
+
+	print(("[LTSM] Copying settings from %s to %s"):format(from_name, to_name))
+	ltsm.encounters[to_name] = {}
+	local to = ltsm.encounters[to_name]
 	for k, v in pairs(from) do
 		to[k] = v
 	end
@@ -100,9 +119,10 @@ end
 
 local function set_spec(spec)
 	if spec == LTSM_DATA.SPEC_DONT_CARE then
-		return
+		return false
 	end
 	SetLootSpecialization(spec)
+	return true
 end
 
 local events = {}
@@ -116,25 +136,27 @@ end
 
 function events:ENCOUNTER_START(id, _, difficulty)
 	if C_ChallengeMode.GetActiveKeystoneInfo() ~= 0 then
-		print(("[LTSM] ignoring %d because it's detected as m+"):format(id))
+		--print(("[LTSM] ignoring %d because it's detected as m+"):format(id))
 		return
 	end
-	print(("[LTSM] pulled %d, setting spec"):format(id))
-	set_spec(LTSM_API:get_spec_for_encounter(id, difficulty))
+	if set_spec(LTSM_API:get_spec_for_encounter(id, difficulty)) then
+		print(("[LTSM] Boss pulled. Spec changed."):format(id))
+	end
 end
 
 local next_azerite_is_mp_box = false
 
 function events:CHALLENGE_MODE_COMPLETED()
 	local map = C_ChallengeMode.GetCompletionInfo()
-	print("[LTSM] m+ finished. setting spec. next azerite should swap the spec back to default")
-	set_spec(LTSM_API:get_mythicplus_spec(map))
+	if set_spec(LTSM_API:get_mythicplus_spec(map)) then
+		print("[LTSM] M+ finished. Spec changed. Looting the box will change it back to the default spec.")
+	end
 	next_azerite_is_mp_box = true
 end
 
 function events:AZERITE_ITEM_EXPERIENCE_CHANGED()
 	if next_azerite_is_mp_box then
-		print("[LTSM] m+ box looted. swapping spec back to default")
+		print("[LTSM] M+ box looted. Swapping to the default spec.")
 		next_azerite_is_mp_box = false
 		set_spec(LTSM_API:get_default_spec())
 	end

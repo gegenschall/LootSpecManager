@@ -259,13 +259,13 @@ function LTSM_GUI:init()
 		y = y - 10
 	end
 
-	local dropdown = CreateFrame("Frame", nil, f, "UIDropDownMenuTemplate")
-	dropdown:SetSize(100, 50)
-	dropdown:SetPoint("TOPLEFT", f, "TOPLEFT", 64, -32)
-	UIDropDownMenu_Initialize(dropdown, function()
+	local current_dropdown = CreateFrame("Frame", nil, f, "UIDropDownMenuTemplate")
+	current_dropdown:SetSize(100, 50)
+	current_dropdown:SetPoint("TOPLEFT", f, "TOPLEFT", 48, -32)
+	UIDropDownMenu_Initialize(current_dropdown, function()
 		local function callback(self)
 			LTSM_API:set_active_settings_difficulty(self.value)
-			UIDropDownMenu_SetSelectedValue(dropdown, self.value)
+			UIDropDownMenu_SetSelectedValue(current_dropdown, self.value)
 		end
 
 		local function make_button(info, value, text)
@@ -283,7 +283,36 @@ function LTSM_GUI:init()
 		make_button(info, "normal", "Normal")
 		make_button(info, "lfr", "LFR")
 	end)
-	UIDropDownMenu_SetSelectedValue(dropdown, ltsm.current)
+	UIDropDownMenu_SetSelectedValue(current_dropdown, ltsm.current)
+
+	local copy_dropdown = CreateFrame("Frame", nil, f, "UIDropDownMenuTemplate")
+	copy_dropdown:SetSize(100, 50)
+	copy_dropdown:SetPoint("TOPRIGHT", f, "TOPRIGHT", -80, -32)
+	UIDropDownMenu_Initialize(copy_dropdown, function()
+		local function callback(self)
+			if self.value ~= "copyfrom" then
+				LTSM_API:copy_settings(self.value, ltsm.current)
+				LTSM_GUI:refresh()
+			end
+		end
+
+		local function make_button(info, value, text)
+			info.text = text
+			info.value = value
+			info.func = callback
+			info.checked = false
+			info.isNotRadio = false
+			UIDropDownMenu_AddButton(info)
+		end
+
+		local info = UIDropDownMenu_CreateInfo()
+		make_button(info, "copyfrom", "Copy from")
+		make_button(info, "mythic", "Mythic")
+		make_button(info, "heroic", "Heroic")
+		make_button(info, "normal", "Normal")
+		make_button(info, "lfr", "LFR")
+	end)
+	UIDropDownMenu_SetSelectedValue(copy_dropdown, "copyfrom")
 
 	self:refresh()
 	f:Hide()
@@ -295,6 +324,16 @@ function LTSM_GUI:refresh()
 		if checkbox then
 			radio_group_disable_all(checkbox)
 			checkbox:SetChecked(true)
+		end
+	end
+
+	for _, instance in ipairs(LTSM_DATA.INSTANCE_BOSSES) do
+		for _, encounter in ipairs(instance.encounters) do
+			local checkbox = _G[("ltsm-cb-%d-%d"):format(encounter.id, LTSM_API:get_spec_for_encounter(encounter.id, LTSM_API.reverse_difficulties[LTSM.current]))]
+			if checkbox then
+				radio_group_disable_all(checkbox)
+				checkbox:SetChecked(true)
+			end
 		end
 	end
 
