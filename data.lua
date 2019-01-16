@@ -37,6 +37,26 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
 	end
 	return ret
 end)(
+	{"Battle of Dazar'alor", (function()
+		local encounters = {
+			[4] = {name = "Opulence", id = 2271},
+			[5] = {name = "Conclave of the Chosen", id = 2268},
+			[6] = {name = "King Rastakhan", id = 2272},
+			[7] = {name = "High Tinker Mekkatorque", id = 2276},
+			[8] = {name = "Stormwall Blockade", id = 2280},
+			[9] = {name = "Lady Jaina Proudmoore", id = 2281}
+		}
+		if UnitFactionGroup("player") == "Alliance" then
+			encounters[1] = {name = "Champion of the Light", id = 2265}
+			encounters[2] = {name = "Jadefire Masters", id = 2266}
+			encounters[3] = {name = "Grong, the Revenant", id = 2263}
+		else
+			encounters[1] = {name = "Champion of the Light", id = 2265}
+			encounters[2] = {name = "Grong, the Jungle Lord", id = 2263}
+			encounters[3] = {name = "Jadefire Masters", id = 2266}
+		end
+		return encounters
+	end)()},
 	{"Uldir", {
 		[1] = {name = "Taloc", id = 2144},
 		[2] = {name = "MOTHER", id = 2141},
