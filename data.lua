@@ -37,6 +37,10 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
 	end
 	return ret
 end)(
+	{"Crucible of Storms", {
+		[1] = {name = "The Restless Cabal", id = 2269},
+		[2] = {name = "Uu'nat, Harbinger of the Void", id = 2273}
+	}},
 	{"Battle of Dazar'alor", (function()
 		local encounters = {
 			[4] = {name = "Opulence", id = 2271},
