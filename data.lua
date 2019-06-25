@@ -37,6 +37,16 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
 	end
 	return ret
 end)(
+	{"The Eternal Palace", {
+		[1] = {name = "Abyssal Commander Sivara", id = 2298},
+		[2] = {name = "Blackwater Behemoth", id = 2289},
+		[3] = {name = "Radiance of Azshara", id = 2305},
+		[4] = {name = "Lady Ashvane", id = 2304},
+		[5] = {name = "Orgozoa", id = 2303},
+		[6] = {name = "The Queen's Court", id = 2311},
+		[7] = {name = "Za'qul, Harbinger of Ny'alotha", id = 2293},
+		[8] = {name = "Queen Azshara", id = 2299}
+	}},
 	{"Crucible of Storms", {
 		[1] = {name = "The Restless Cabal", id = 2269},
 		[2] = {name = "Uu'nat, Harbinger of the Void", id = 2273}
@@ -61,16 +71,6 @@ end)(
 		end
 		return encounters
 	end)()},
-	{"The Eternal Palace", {
-		[1] = {name = "Abyssal Commander Sivara", id = 2298},
-		[2] = {name = "Blackwater Behemoth", id = 2289},
-		[3] = {name = "Radiance of Azshara", id = 2305},
-		[4] = {name = "Lady Ashvane", id = 2304},
-		[5] = {name = "Orgozoa", id = 2303},
-		[6] = {name = "The Queen's Court", id = 2311},
-		[7] = {name = "Za'qul, Harbinger of Ny'alotha", id = 2293},
-		[8] = {name = "Queen Azshara", id = 2299}
-	}},
 	{"Uldir", {
 		[1] = {name = "Taloc", id = 2144},
 		[2] = {name = "MOTHER", id = 2141},
@@ -169,7 +169,7 @@ LTSM_DATA.DUNGEON_MAPS = (function(...)
 	end
 	return ret
 end)(
-	{"Mechagon", 2097},
+	--{"Mechagon", 2097},
 	{"Atal'Dazar", 1763},
 	{"Freehold", 1754},
 	{"Kings' Rest", 1762},
