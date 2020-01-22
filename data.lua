@@ -37,6 +37,20 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
 	end
 	return ret
 end)(
+	{"Ny'alotha, The Waking City", {
+		[1] = {name = "Wrathion, the Black Emperor", id = 2329},
+		[2] = {name = "Maut", id = 2327},
+		[3] = {name = "The Prophet Skitra", id = 2334},
+		[4] = {name = "Dark Inquisitor Xanesh", id = 2328},
+		[5] = {name = "The Hivemind", id = 2333},
+		[6] = {name = "Shad'har the Insatiable", id = 2335},
+		[7] = {name = "Drest'agath", id = 2343},
+		[8] = {name = "Il'gynoth, Corruption Reborn", id = 2345},
+		[9] = {name = "Vexiona", id = 2336},
+		[10] = {name = "Ra-den the Despoiled", id = 2331},
+		[11] = {name = "Carapace of N'Zoth", id = 2337},
+		[12] = {name = "N'Zoth the Corruptor", id = 2344}
+	}},
 	{"The Eternal Palace", {
 		[1] = {name = "Abyssal Commander Sivara", id = 2298},
 		[2] = {name = "Blackwater Behemoth", id = 2289},
@@ -169,7 +183,7 @@ LTSM_DATA.DUNGEON_MAPS = (function(...)
 	end
 	return ret
 end)(
-	--{"Mechagon", 2097},
+	{"Mechagon", 2097},
 	{"Atal'Dazar", 1763},
 	{"Freehold", 1754},
 	{"Kings' Rest", 1762},
