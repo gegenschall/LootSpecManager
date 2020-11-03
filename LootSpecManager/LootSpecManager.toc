@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 90001
 ## Author: Req
 ## Title: LootSpecManager
 ## Notes: Manages loot spec preferences for dungeon/raid bosses.
@@ -6,4 +6,4 @@
 
 data.lua
 gui.lua
-core.lua
+LootSpecManager.lua
