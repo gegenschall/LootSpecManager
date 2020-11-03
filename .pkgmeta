@@ -1,0 +1,10 @@
+package-as: LootSpecManager
+
+enable-nolib-creation: no
+
+ignore:
+  - README.md
+  - CONTRIBUTING.md
+
+move-folders:
+  LootSpecManager/LootSpecManager: LootSpecManager
