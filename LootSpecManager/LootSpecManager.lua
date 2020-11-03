@@ -1,4 +1,3 @@
-
 local ltsm
 
 LTSM_API = {}
@@ -35,7 +34,7 @@ function LTSM_API:get_spec_for_encounter(encounter, difficulty)
 	if table == nil then
 		return LTSM_DATA.SPEC_DONT_CARE
 	end
-	spec = table[encounter]
+	local spec = table[encounter]
 	if spec == nil then
 		spec = LTSM_DATA.SPEC_DONT_CARE
 	end
@@ -99,7 +98,7 @@ end
 function LTSM_API:copy_settings(from_name, to_name)
 	local from = ltsm.encounters[from_name]
 	if from == nil then
-		error("Difficulty table doesn't exist: " .. difficulty)
+		error("Difficulty table doesn't exist: " .. from_name)
 	end
 
 	if from_name == to_name then

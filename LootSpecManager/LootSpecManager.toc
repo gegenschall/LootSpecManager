@@ -1,9 +1,10 @@
 ## Interface: 90001
-## Author: Req
+## Author: Req, gegenschall
 ## Title: LootSpecManager
 ## Notes: Manages loot spec preferences for dungeon/raid bosses.
 ## SavedVariablesPerCharacter: LTSM
+## X-Curse-Project-ID: 301237
 
-data.lua
-gui.lua
+Data.lua
+Gui.lua
 LootSpecManager.lua

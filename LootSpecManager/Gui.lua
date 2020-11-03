@@ -62,7 +62,7 @@ local function create_subheader(parent, title, y)
 end
 
 local function create_spec_row(parent, classname, specs, y)
-	function make_spec_display(icon, x)
+	local function make_spec_display(icon, x)
 		local frame = CreateFrame("Frame", nil, parent)
 		frame:SetSize(ROW_VERTICAL_SPACING, ROW_VERTICAL_SPACING)
 		frame:SetPoint("TOPRIGHT", parent, "TOPRIGHT", x, y)
