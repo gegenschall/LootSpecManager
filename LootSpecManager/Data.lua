@@ -37,6 +37,18 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
 	end
 	return ret
 end)(
+	{"Castle Nathria", {
+		[1] = {name = "Shriekwing", id = 2398},
+		[2] = {name = "Huntsman Altimor", id = 2418},
+		[3] = {name = "Hungering Destroyer", id = 2383},
+		[4] = {name = "Artificer Xy'Mox", id = 2405},
+		[5] = {name = "Sun King's Salvation", id = 2402},
+		[6] = {name = "Lady Inerva Darkvein", id = 2406},
+		[7] = {name = "The Council of Blood", id = 2412},
+		[8] = {name = "Sludgefist", id = 2399},
+		[9] = {name = "Stone Legion Generals", id = 2417},
+		[10] = {name = "Sire Denathrius", id = 2407},
+	}},
 	{"Ny'alotha, The Waking City", {
 		[1] = {name = "Wrathion, the Black Emperor", id = 2329},
 		[2] = {name = "Maut", id = 2327},
