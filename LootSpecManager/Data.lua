@@ -243,6 +243,16 @@ LTSM_DATA.DUNGEON_MAPS = (function(...)
 	end
 	return ret
 end)(
+  -- Shadowlands
+  {"The Necrotic Wake", 2286},
+  {"Plaguefall", 2289},
+  {"Mists of Tirna Scithe", 2290},
+  {"Halls of Atonement", 2287},
+  {"Theater of Pain", 2293},
+  {"De Other Side", 2291},
+  {"Spires of Ascension", 2285},
+  {"Sanguine Depths", 2284},
+  -- Battle for Azeroth
 	{"Mechagon", 2097},
 	{"Atal'Dazar", 1763},
 	{"Freehold", 1754},
