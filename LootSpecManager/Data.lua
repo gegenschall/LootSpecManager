@@ -75,9 +75,9 @@ end)(
   {"Theater of Pain", {
     [1] = {name = "An Affront of Challengers", id = 2391},
     [2] = {name = "Gorechop", id = 2365},
-    [2] = {name = "Xav the Unfallen", id = 2366},
-    [3] = {name = "Kul'tharok", id = 2364},
-    [4] = {name = "Mordretha, the Endless Empress", id = 2404},
+    [3] = {name = "Xav the Unfallen", id = 2366},
+    [4] = {name = "Kul'tharok", id = 2364},
+    [5] = {name = "Mordretha, the Endless Empress", id = 2404},
   }},
   {"De Other Side", {
     [1] = {name = "Hakkar the Soulflayer", id = 2395},
