@@ -85,13 +85,13 @@ end)(
     [3] = {name = "Dealer Xy'exa", id = 2400},
     [4] = {name = "Mueh'zala", id = 2396},
   }},
-    {"Spires of Ascension", {
+  {"Spires of Ascension", {
     [1] = {name = "Kin-Tara", id = 2357},
     [2] = {name = "Ventunax", id = 2356},
     [3] = {name = "Oryphrion", id = 2358},
     [4] = {name = "Devos, Paragon of Doubt", id = 2359},
   }},
-    {"Sanguine Depths", {
+  {"Sanguine Depths", {
     [1] = {name = "Kryxis the Voracious", id = 2360},
     [2] = {name = "Executor Tarvold", id = 2361},
     [3] = {name = "Grand Proctor Beryllia", id = 2362},

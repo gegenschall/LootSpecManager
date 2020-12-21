@@ -149,22 +149,15 @@ function events:ENCOUNTER_END()
   set_spec(LTSM_API:get_default_spec())
 end
 
-local next_azerite_is_mp_box = false
-
-function events:CHALLENGE_MODE_COMPLETED()
-  local map = C_ChallengeMode.GetCompletionInfo()
-  if set_spec(LTSM_API:get_mythicplus_spec(map)) then
-    print("[LTSM] M+ finished. Spec changed. Looting the box will change it back to the default spec.")
+function events:CHALLENGE_MODE_START(mapId)
+  if set_spec(LTSM_API:get_mythicplus_spec(mapId)) then
+    print("[LTSM] M+ started, loot spec changed.")
   end
-  next_azerite_is_mp_box = true
 end
 
-function events:AZERITE_ITEM_EXPERIENCE_CHANGED()
-  if next_azerite_is_mp_box then
-    print("[LTSM] M+ box looted. Swapping to the default spec.")
-    next_azerite_is_mp_box = false
-    set_spec(LTSM_API:get_default_spec())
-  end
+function events:CHALLENGE_MODE_COMPLETED()
+  print("[LTSM] M+ finished, loot spec changing back.")
+  set_spec(LTSM_API:get_default_spec())
 end
 
 local frame = CreateFrame("Frame");
