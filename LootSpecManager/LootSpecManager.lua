@@ -142,13 +142,6 @@ function events:ENCOUNTER_START(id, _, difficulty)
   end
 end
 
-function events:ENCOUNTER_END()
-  if C_ChallengeMode.GetActiveKeystoneInfo() ~= 0 then
-    return
-  end
-  set_spec(LTSM_API:get_default_spec())
-end
-
 function events:CHALLENGE_MODE_START(mapId)
   if set_spec(LTSM_API:get_mythicplus_spec(mapId)) then
     print("[LTSM] M+ started, loot spec changed.")
