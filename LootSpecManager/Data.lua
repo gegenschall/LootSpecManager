@@ -37,6 +37,18 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
   end
   return ret
 end)(
+  {"Sanctum of Domination", {
+    [1] = {name = "The Tarragrue", id = 2423},
+    [2] = {name = "Eye of the Jailer", id = 2433},
+    [3] = {name = "The Nine", id = 2429},
+    [4] = {name = "Remnant of Ner'zhul", id = 2432},
+    [5] = {name = "Soulrender Dormazain", id = 2434},
+    [6] = {name = "Painsmith Raznal", id = 2430},
+    [7] = {name = "Guardian of the First Ones", id = 2436},
+    [8] = {name = "Fatescribe Roh-Kalo", id = 2431},
+    [9] = {name = "Kel'Thuzad", id = 2422},
+    [10] = {name = "Sylvanas Windrunner", id = 2435},
+  }},
   {"Castle Nathria", {
     [1] = {name = "Shriekwing", id = 2398},
     [2] = {name = "Huntsman Altimor", id = 2418},
