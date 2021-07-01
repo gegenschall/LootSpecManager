@@ -61,6 +61,16 @@ end)(
     [9] = {name = "Stone Legion Generals", id = 2417},
     [10] = {name = "Sire Denathrius", id = 2407},
   }},
+  {"Tazavesh, the Veiled Market", {
+    [1] = {name = "Zo'phex", id = 2425},
+    [2] = {name = "The Menagerie", id = 2425},
+    [3] = {name = "Mailroom Mayhem", id = 2424},
+    [4] = {name = "Myza's Oasis", id = 2440},
+    [5] = {name = "So'azmi", id = 2437},
+    [6] = {name = "Hylbrande", id = 2426},
+    [7] = {name = "Timecap'n Hooktail", id = 2419},
+    [8] = {name = "So'leah", id = 2442},
+  }},
   {"The Necrotic Wake", {
     [1] = {name = "Blightbone", id = 2387},
     [2] = {name = "Amarth, The Harvester", id = 2388},
@@ -256,6 +266,7 @@ LTSM_DATA.DUNGEON_MAPS = (function(...)
   return ret
 end)(
   -- Shadowlands
+  {"Tazavesh, the Veiled Market", 2441},
   {"The Necrotic Wake", 2286},
   {"Plaguefall", 2289},
   {"Mists of Tirna Scithe", 2290},
