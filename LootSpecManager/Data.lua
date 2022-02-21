@@ -37,6 +37,19 @@ LTSM_DATA.INSTANCE_BOSSES = (function(...)
   end
   return ret
 end)(
+  {"Sepulcher of the First Ones", {
+    [1] = {name = "Vigilant Guardian", id = 2512},
+    [2] = {name = "Dausegne, the Fallen Oracle", id = 2540},
+    [3] = {name = "Prototype Pantheon", id = 2544},
+    [4] = {name = "Lihuvim, Principal Architect", id = 2539},
+    [5] = {name = "Skolex, the Insatiable Ravener", id = 2542},
+    [6] = {name = "Artificer Xy'mox", id = 2553},
+    [7] = {name = "Halondrus the Reclaimer", id = 2529},
+    [8] = {name = "Anduin Wrynn", id = 2546},
+    [9] = {name = "Lords of Dread", id = 2543},
+    [10] = {name = "Rygelon", id = 2549},
+    [11] = {name = "The Jailer", id = 2537},
+  }},
   {"Sanctum of Domination", {
     [1] = {name = "The Tarragrue", id = 2423},
     [2] = {name = "Eye of the Jailer", id = 2433},
