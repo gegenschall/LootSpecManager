@@ -267,6 +267,27 @@ end)(
     [3] = {name = "Raal the Gluttonous", id = 2115},
     [4] = {name = "Lord and Lady Waycrest", id = 2116},
     [5] = {name = "Gorak Tul", id = 2117}
+  }},
+    {"Karazhan", {
+    [1] = {name = "Opera Hall", id = 1957},
+    [2] = {name = "Maiden of Virtue", id = 1954},
+    [3] = {name = "Attumen the Huntsman", id = 1960},
+    [4] = {name = "Moroes", id = 1961},
+    [5] = {name = "The Curator", id = 1964},
+    [6] = {name = "Shade of Medivh", id = 1965},
+    [7] = {name = "Mana Devourer", id = 1959},
+    [8] = {name = "Viz'aduum the Watcher", id = 2017}
+  }},
+      {"Iron Docks", {
+    [1] = {name = "Fleshrender Nok'gar", id = 1749},
+    [2] = {name = "Grimrail Enforcers", id = 1748},
+    [3] = {name = "Oshir", id = 1750},
+    [4] = {name = "Skulloc, Son of Gruul", id = 1754}
+  }},
+      {"Grimrail Depot", {
+    [1] = {name = "Rocketspark and Borka", id = 1715},
+    [2] = {name = "Nitrogg Thundertower", id = 1732},
+    [3] = {name = "Skylord Tovra", id = 1736}
   }}
 )
 
@@ -299,7 +320,12 @@ end)(
   {"The MOTHERLODE!!", 1594},
   {"The Underrot", 1841},
   {"Tol Dagor", 1771},
-  {"Waycrest Manor", 1862}
+  {"Waycrest Manor", 1862},
+  -- Legion
+  {"Karazhan", 1651},
+  -- Warlords
+  {"Iron Docks", 1195},
+  {"Grimrail Depot", 1208}
 )
 
 --[[
