@@ -88,8 +88,7 @@ end
 function LootSpecManager:OnEncounterStart(_, encounterId, encounterName, difficultyId)
     -- This will trigger on bosskills in M+ dungeons and then erroneously overwrite loot spec
     -- We also don't want to do anything when legacy loot is enabled
-    -- if C_ChallengeMode.IsChallengeModeActive() or C_Loot.IsLegacyLootModeEnabled() then
-    if C_ChallengeMode.IsChallengeModeActive() then
+    if C_ChallengeMode.IsChallengeModeActive() or C_Loot.IsLegacyLootModeEnabled() then
         return
     end
 

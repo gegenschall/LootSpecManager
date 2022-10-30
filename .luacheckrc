@@ -101,5 +101,6 @@ globals = {
 	"LibStub",
 	"EncounterJournal",
 	"C_Map",
+	"C_Loot",
 	"EJ_InstanceIsRaid"
 }
