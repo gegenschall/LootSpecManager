@@ -1,167 +1,148 @@
-local ltsm
+local AddonName, Private = ...
 
-LTSM_API = {}
+local AceAddon = LibStub("AceAddon-3.0")
+local AceDB = LibStub("AceDB-3.0")
+local AceConfig = LibStub("AceConfig-3.0")
+local AceDBOptions = LibStub("AceDBOptions-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
----
--- Mapping from the ENCOUNTER_START difficulty parameter to difficulty table names.
-LTSM_API.difficulties = {
-  [17] = "lfr",
-  [1] = "normal", --dungeons
-  [14] = "normal", --raids
-  [2] = "heroic", --dungeons
-  [15] = "heroic", --raids
-  [23] = "mythic", --dungeons
-  [16] = "mythic", --raids
+local LootSpecManager = AceAddon:NewAddon(AddonName, "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0")
+
+Private.LootSpecManager = LootSpecManager
+
+local defaultSettings = {
+    profile = {
+        version = LootSpecManager.SETTINGS_VERSION,
+        encounter = {},
+        instance = {}
+    }
 }
 
----
--- Mapping from difficulty table names to the ENCOUNTER_START difficulty parameter.
-LTSM_API.reverse_difficulties = {
-  lfr = 17,
-  normal = 1,
-  heroic = 2,
-  mythic = 23
-}
+function LootSpecManager:SetLootSpecForEncounter(encounterId, difficultyId, lootSpecId)
+    print("set", encounterId, difficultyId, lootSpecId)
+    local encounters = self.savedVariables.profile.encounter[difficultyId] or {}
 
----
--- Retrieves the loot spec setting for a specific encounter and difficulty.
--- @param encounter Encounter ID from ENCOUNTER_START.
--- @param difficulty (optional) Difficulty parameter from ENCOUNTER_START.
--- @return Spec ID for the encounter and difficulty. Returns SPEC_DONT_CARE if the setting doesn't exist.
-function LTSM_API:get_spec_for_encounter(encounter, difficulty)
-  difficulty = self.difficulties[difficulty]
-  local table = ltsm.encounters[difficulty]
-  if table == nil then
-    return LTSM_DATA.SPEC_DONT_CARE
-  end
-  local spec = table[encounter]
-  if spec == nil then
-    spec = LTSM_DATA.SPEC_DONT_CARE
-  end
-  return spec
+    encounters[encounterId] = lootSpecId
+
+    self.savedVariables.profile.encounter[difficultyId] = encounters
 end
 
----
--- Sets the active table used for settings management.
--- All settings changes will occur in this table.
--- @param difficulty A difficulty table name.
-function LTSM_API:set_active_settings_difficulty(difficulty)
-  if ltsm.encounters[difficulty] == nil then
-    error("Difficulty table doesn't exist: " .. difficulty)
-  end
-  ltsm.current = difficulty
-  LTSM_GUI:refresh()
+function LootSpecManager:GetLootSpecForEncounter(encounterId, difficultyId)
+    local encounters = self.savedVariables.profile.encounter[difficultyId] or {}
+
+    return encounters[encounterId] or LootSpecManager.CURRENT_LOOT_SPEC
 end
 
----
--- Sets the spec setting for an encounter in the current difficulty table.
--- @param encounter Encounter ID from ENCOUNTER_START.
--- @param spec Spec ID to set the encounter setting to.
-function LTSM_API:set_spec_setting(encounter, spec)
-  ltsm.encounters[ltsm.current][encounter] = spec
+function LootSpecManager:GetLootSpecForMap(mapId, difficultyId)
+    local instances = self.savedVariables.profile.instance[difficultyId] or {}
+
+    return instances[mapId] or LootSpecManager.CURRENT_LOOT_SPEC
 end
 
----
--- Retrieves the default loot spec setting.
--- @return Default loot spec ID.
-function LTSM_API:get_default_spec()
-  return ltsm.default
+function LootSpecManager:SetLootSpecForMap(mapId, difficultyId, lootSpecId)
+    local instances = self.savedVariables.profile.instance[difficultyId] or {}
+
+    instances[mapId] = lootSpecId
+
+    self.savedVariables.profile.instance[difficultyId] = instances
 end
 
----
--- Sets the default loot spec setting.
--- @param spec Spec ID to set the default to.
-function LTSM_API:set_default_spec(spec)
-  ltsm.default = spec
+function LootSpecManager:Migrate()
+    if LootSpecManager.Compat:ShouldMigrateData() then
+        LootSpecManager:Print('Found LootSpecManager v1 data. Migrating...')
+
+        local raidMappings = self.Compat:TransformEncounterMappings()
+
+        self.savedVariables.profile.encounter = raidMappings
+
+        self.Compat:SetMigratedFlag(true)
+    end
 end
 
----
--- Retrieves the spec setting for a M+ dungeon.
--- @param map Primary map ID from LTSM_DATA.
--- @return Spec ID for the end-of-key box.
-function LTSM_API:get_mythicplus_spec(map)
-  return ltsm.mythicplus[map] or LTSM_DATA.SPEC_DONT_CARE
+function LootSpecManager:ResetMigration()
+    self.Compat:SetMigratedFlag(false)
 end
 
----
--- Sets the spec setting for a M+ dungeon.
--- @param map Primary map ID from LTSM_DATA.
--- @param spec Spec ID for the end-of-key box.
-function LTSM_API:set_mythicplus_spec(map, spec)
-  ltsm.mythicplus[map] = spec
+function LootSpecManager:OnInitialize()
+    LootSpecManager:Print('Initializing Addon')
+
+    -- Initialize savedVariables, use defaults and use default profile named by character
+    self.savedVariables = AceDB:New(AddonName, defaultSettings)
+
+    -- Hook up profiles into options
+    LootSpecManager.Options.args.profile = AceDBOptions:GetOptionsTable(self.savedVariables)
+    AceConfigDialog:AddToBlizOptions(AddonName);
+
+    -- Initialize slash command options
+    AceConfig:RegisterOptionsTable(AddonName, LootSpecManager.Options, {"ltsm"})
 end
 
----
--- Copies settings from one difficulty table to another.
--- @param from Difficulty table name to copy from.
--- @param to Difficulty table name to copy to.
-function LTSM_API:copy_settings(from_name, to_name)
-  local from = ltsm.encounters[from_name]
-  if from == nil then
-    error("Difficulty table doesn't exist: " .. from_name)
-  end
-
-  if from_name == to_name then
-    print(("[LTSM] Not bothering to copy settings from %s to %s"):format(from_name, to_name))
-    return
-  end
-
-  print(("[LTSM] Copying settings from %s to %s"):format(from_name, to_name))
-  ltsm.encounters[to_name] = {}
-  local to = ltsm.encounters[to_name]
-  for k, v in pairs(from) do
-    to[k] = v
-  end
+function LootSpecManager:OnAddonLoaded(_, addonName)
+    if addonName == "Blizzard_EncounterJournal" then
+        LootSpecManager:HookScript(EncounterJournal, "OnShow", "HookEncounterJournalShow")
+        LootSpecManager:SecureHook("EncounterJournal_DisplayInstance", "HookDisplayInstance")
+        LootSpecManager:SecureHook("EncounterJournal_DisplayEncounter", "HookDisplayEncounter")
+    end
 end
 
--- END API --
+function LootSpecManager:OnEncounterStart(_, encounterId, encounterName, difficultyId)
+    -- This will trigger on bosskills in M+ dungeons and then erroneously overwrite loot spec
+    -- We also don't want to do anything when legacy loot is enabled
+    -- if C_ChallengeMode.IsChallengeModeActive() or C_Loot.IsLegacyLootModeEnabled() then
+    if C_ChallengeMode.IsChallengeModeActive() then
+        return
+    end
 
-local function set_spec(spec)
-  if spec == LTSM_DATA.SPEC_DONT_CARE then
-    return false
-  end
-  SetLootSpecialization(spec)
-  return true
+    local requestedLootSpec = self:GetLootSpecForEncounter(encounterId, difficultyId)
+
+    if requestedLootSpec == LootSpecManager.CURRENT_LOOT_SPEC then
+        return
+    end
+
+    SetLootSpecialization(requestedLootSpec)
+    local _, specializationName = GetSpecializationInfoByID(requestedLootSpec)
+
+    LootSpecManager:Printf('%s engaged, loot spec changed to %s', encounterName, specializationName)
 end
 
-local events = {}
+function LootSpecManager:OnMythicPlusStart(_, mapId)
+    local requestedLootSpec = self:GetLootSpecForMap(mapId)
 
-function events:PLAYER_LOGIN()
-  LTSM = LTSM or {}
-  ltsm = LTSM
-  LTSM_DATA:check_version()
-  LTSM_GUI:init()
+    if requestedLootSpec == LootSpecManager.CURRENT_LOOT_SPEC then
+        return
+    end
+
+    SetLootSpecialization(requestedLootSpec)
+    local _, specializationName = GetSpecializationInfoByID(requestedLootSpec)
+    local _, mapName = C_Map.GetMapInfo(mapId)
+
+    LootSpecManager:Printf('M+ dungeon %s started, loot spec changed to %s', mapName, specializationName)
 end
 
-function events:ENCOUNTER_START(id, _, difficulty)
-  if C_ChallengeMode.GetActiveKeystoneInfo() ~= 0 then
-    return
-  end
-  if set_spec(LTSM_API:get_spec_for_encounter(id, difficulty)) then
-    print(("[LTSM] Boss pulled. Spec changed."):format(id))
-  end
+function LootSpecManager:HookDisplayEncounter(encounterJournalId)
+    local currentDifficulty = EJ_GetDifficulty()
+    local _, _, _, _, _, _, encounterId = EJ_GetEncounterInfo(encounterJournalId)
+
+    self.Gui:UpdateEncounterLootSpecDropdown(encounterId, currentDifficulty)
 end
 
-function events:CHALLENGE_MODE_START(mapId)
-  if set_spec(LTSM_API:get_mythicplus_spec(mapId)) then
-    print("[LTSM] M+ started, loot spec changed.")
-  end
+function LootSpecManager:HookDisplayInstance(instanceId)
+    if EJ_InstanceIsRaid() then
+        self.Gui:HideLootSpecDropDown()
+        return
+    end
+
+    local difficultyId = EJ_GetDifficulty()
+    local _, _, _, _, _, _, _, _, _, mapId = EJ_GetInstanceInfo(instanceId)
+
+    self.Gui:UpdateInstanceLootSpecDropdown(mapId, difficultyId)
 end
 
-function events:CHALLENGE_MODE_COMPLETED()
-  print("[LTSM] M+ finished, loot spec changing back.")
-  set_spec(LTSM_API:get_default_spec())
+function LootSpecManager:HookEncounterJournalShow()
+    self.Gui:CreateLootSpecDropdown()
 end
 
-local frame = CreateFrame("Frame");
-frame:SetScript("OnEvent", function(self, event, ...)
-  return events[event](self, ...)
-end)
-for k, _ in pairs(events) do
-  frame:RegisterEvent(k)
-end
-
-SLASH_LOOTSPECMANAGER1 = "/ltsm"
-SlashCmdList["LOOTSPECMANAGER"] = function()
-  LTSM_GUI.frame:Show()
-end
+LootSpecManager:RegisterEvent("ADDON_LOADED", "OnAddonLoaded")
+LootSpecManager:RegisterEvent("ENCOUNTER_START", "OnEncounterStart")
+LootSpecManager:RegisterEvent("CHALLENGE_MODE_START", "OnMythicPlusStart")
+-- LootSpecManager:RegisterEvent("CHALLENGE_MODE_COMPLETED", "OnMythicPlusCompleted")
