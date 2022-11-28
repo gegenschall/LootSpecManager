@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100002
 ## Author: Req, gegenschall
 ## Title: LootSpecManager
 ## Notes: Manages loot spec preferences for dungeon/raid bosses.
