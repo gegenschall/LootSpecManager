@@ -19,7 +19,6 @@ local defaultSettings = {
 }
 
 function LootSpecManager:SetLootSpecForEncounter(encounterId, difficultyId, lootSpecId)
-    print("set", encounterId, difficultyId, lootSpecId)
     local encounters = self.savedVariables.profile.encounter[difficultyId] or {}
 
     encounters[encounterId] = lootSpecId
