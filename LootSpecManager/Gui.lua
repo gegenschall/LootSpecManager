@@ -48,8 +48,8 @@ function Gui:CreateLootSpecDropdown()
         "EJButtonTemplate"
     )
 
-    self.button:SetPoint("RIGHT", EncounterJournalEncounterFrameInfoResetButton, "LEFT", -10, 0)
-    self.button:SetWidth(26)
+    self.button:SetPoint("RIGHT", EncounterJournalEncounterFrameInfoResetButton, "LEFT", 16, 0)
+    self.button:SetWidth(18)
     self.button:SetHeight(26)
     self.button:SetFrameLevel(10)
 
