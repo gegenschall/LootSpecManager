@@ -41,6 +41,8 @@ function Gui:OnLootSpecDropdownItemClick(specId)
 end
 
 function Gui:CreateLootSpecDropdown()
+    if (self.button) then return end
+
     self.button = CreateFrame(
         "DropDownToggleButton", 
         "$parentLootSpec", 
@@ -48,14 +50,15 @@ function Gui:CreateLootSpecDropdown()
         "EJButtonTemplate"
     )
 
-    self.button:SetPoint("RIGHT", EncounterJournalEncounterFrameInfoResetButton, "LEFT", -10, 0)
-    self.button:SetWidth(26)
+    self.button:SetPoint("LEFT", EncounterJournalEncounterFrameInfoFilterToggle, "LEFT", -110, 0)
+    self.button:SetWidth(75)
     self.button:SetHeight(26)
     self.button:SetFrameLevel(10)
 
     self.dropdownMenu = CreateFrame("Frame", "$parentSpecDD", self.button, "UIDropDownMenuTemplate")
     
     UIDropDownMenu_Initialize(self.dropdownMenu, LootSpecDropdownInit, "MENU");
+    UIDropDownMenu_SetSelectedValue(self.dropdownMenu, "")
 
     self.button:SetScript("OnMouseDown", function ()
         ToggleDropDownMenu(1, nil, self.dropdownMenu, self.button, 0, 0)
@@ -74,6 +77,7 @@ function Gui:UpdateEncounterLootSpecDropdown(encounterId, difficultyId)
         _, specName = GetSpecializationInfoByID(lootSpecForEncounter)
     end
 
+    if (not self.button) then return end
     self.button:SetText(specName)
     UIDropDownMenu_SetSelectedValue(self.dropdownMenu, lootSpecForEncounter)
 
@@ -92,6 +96,7 @@ function Gui:UpdateInstanceLootSpecDropdown(mapId, difficultyId)
         _, specName = GetSpecializationInfoByID(lootSpecForInstance)
     end
 
+    if (not self.button) then return end    
     self.button:SetText(specName)
     UIDropDownMenu_SetSelectedValue(self.dropdownMenu, lootSpecForInstance)
 
@@ -99,5 +104,6 @@ function Gui:UpdateInstanceLootSpecDropdown(mapId, difficultyId)
 end
 
 function Gui:HideLootSpecDropDown()
+    if (not self.button) then return end
     self.button:Hide()
 end

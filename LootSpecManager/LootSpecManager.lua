@@ -78,7 +78,9 @@ end
 
 function LootSpecManager:OnAddonLoaded(_, addonName)
     if addonName == "Blizzard_EncounterJournal" then
-        LootSpecManager:HookScript(EncounterJournal, "OnShow", "HookEncounterJournalShow")
+        --EncounterJournal_OnShow fails since 10.1 cause of forbidden action C_EncounterJournal.OnOpen()
+        --see https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_EncounterJournal/Blizzard_EncounterJournal.lua#L573
+        --LootSpecManager:HookScript(EncounterJournal, "OnShow", "HookEncounterJournalShow")
         LootSpecManager:SecureHook("EncounterJournal_DisplayInstance", "HookDisplayInstance")
         LootSpecManager:SecureHook("EncounterJournal_DisplayEncounter", "HookDisplayEncounter")
     end
@@ -91,30 +93,34 @@ function LootSpecManager:OnEncounterStart(_, encounterId, encounterName, difficu
         return
     end
 
+    if (not encounterName) then encounterName = 'unknown' end
     local requestedLootSpec = self:GetLootSpecForEncounter(encounterId, difficultyId)
 
     if requestedLootSpec == LootSpecManager.CURRENT_LOOT_SPEC then
+        LootSpecManager:Printf('%s engaged, loot spec already ok', encounterName)
         return
     end
 
     SetLootSpecialization(requestedLootSpec)
+
     local _, specializationName = GetSpecializationInfoByID(requestedLootSpec)
+    if (not specializationName) then specializationName = 'unknown' end
 
     LootSpecManager:Printf('%s engaged, loot spec changed to %s', encounterName, specializationName)
 end
 
 function LootSpecManager:OnMythicPlusStart(_, mapId)
-    local requestedLootSpec = self:GetLootSpecForMap(mapId)
+    local requestedLootSpec = self:GetLootSpecForMap(mapId, 8)
+    local _, specializationName = GetSpecializationInfoByID(requestedLootSpec)    
+    if (not specializationName) then specializationName = requestedLootSpec end
 
     if requestedLootSpec == LootSpecManager.CURRENT_LOOT_SPEC then
+        LootSpecManager:Printf('M+ dungeon started, loot spec alread ok')
         return
     end
 
     SetLootSpecialization(requestedLootSpec)
-    local _, specializationName = GetSpecializationInfoByID(requestedLootSpec)
-    local _, mapName = C_Map.GetMapInfo(mapId)
-
-    LootSpecManager:Printf('M+ dungeon %s started, loot spec changed to %s', mapName, specializationName)
+    LootSpecManager:Printf('M+ dungeon started, loot spec changed to %s', specializationName)
 end
 
 function LootSpecManager:HookDisplayEncounter(encounterJournalId)
@@ -125,6 +131,8 @@ function LootSpecManager:HookDisplayEncounter(encounterJournalId)
 end
 
 function LootSpecManager:HookDisplayInstance(instanceId)
+    self.Gui:CreateLootSpecDropdown()
+
     if EJ_InstanceIsRaid() then
         self.Gui:HideLootSpecDropDown()
         return
@@ -136,11 +144,10 @@ function LootSpecManager:HookDisplayInstance(instanceId)
     self.Gui:UpdateInstanceLootSpecDropdown(mapId, difficultyId)
 end
 
-function LootSpecManager:HookEncounterJournalShow()
-    self.Gui:CreateLootSpecDropdown()
-end
+--function LootSpecManager:HookEncounterJournalShow()
+    --self.Gui:CreateLootSpecDropdown()
+--end
 
 LootSpecManager:RegisterEvent("ADDON_LOADED", "OnAddonLoaded")
 LootSpecManager:RegisterEvent("ENCOUNTER_START", "OnEncounterStart")
 LootSpecManager:RegisterEvent("CHALLENGE_MODE_START", "OnMythicPlusStart")
--- LootSpecManager:RegisterEvent("CHALLENGE_MODE_COMPLETED", "OnMythicPlusCompleted")
