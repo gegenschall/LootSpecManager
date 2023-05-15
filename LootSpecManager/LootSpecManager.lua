@@ -81,6 +81,7 @@ function LootSpecManager:OnAddonLoaded(_, addonName)
         --EncounterJournal_OnShow fails since 10.1 cause of forbidden action C_EncounterJournal.OnOpen()
         --see https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_EncounterJournal/Blizzard_EncounterJournal.lua#L573
         --LootSpecManager:HookScript(EncounterJournal, "OnShow", "HookEncounterJournalShow")
+        self.Gui:CreateLootSpecDropdown()
         LootSpecManager:SecureHook("EncounterJournal_DisplayInstance", "HookDisplayInstance")
         LootSpecManager:SecureHook("EncounterJournal_DisplayEncounter", "HookDisplayEncounter")
     end
@@ -131,8 +132,6 @@ function LootSpecManager:HookDisplayEncounter(encounterJournalId)
 end
 
 function LootSpecManager:HookDisplayInstance(instanceId)
-    self.Gui:CreateLootSpecDropdown()
-
     if EJ_InstanceIsRaid() then
         self.Gui:HideLootSpecDropDown()
         return
